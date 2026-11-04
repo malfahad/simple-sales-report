@@ -3,7 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Compute daily sales reports with MTD, balance, and WhatsApp sharing." />
     <title>Daily Sales Report</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Sales Report" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -137,6 +145,25 @@
         aria-labelledby="tab-settings"
         hidden
       >
+        <section id="install-section" class="card settings-section">
+          <h2>Install on device</h2>
+          <p id="install-installed-note" class="settings-help hidden">
+            This app is installed and running from your home screen.
+          </p>
+          <p class="settings-help">
+            Save Daily Sales Report like an app for quick access and offline use.
+          </p>
+          <button type="button" id="install-app-btn" class="btn-primary btn-block hidden">
+            Install app
+          </button>
+          <p id="install-ios-hint" class="settings-hint hidden">
+            On iPhone or iPad: tap <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+          </p>
+          <p class="settings-hint">
+            Install requires opening this site over HTTPS (or localhost), not as a downloaded file.
+          </p>
+        </section>
+
         <section class="card settings-section">
           <h2>Backup &amp; restore</h2>
           <p class="settings-help">
@@ -183,5 +210,6 @@
     <p id="toast" class="toast hidden" role="status"></p>
 
     <script src="app.js"></script>
+    <script src="pwa.js"></script>
   </body>
 </html>

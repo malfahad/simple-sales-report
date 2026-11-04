@@ -513,6 +513,15 @@ button {
   border: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
+#install-section .btn-block + .btn-block,
+#install-section .settings-hint + .btn-block {
+  margin-top: 0.85rem;
+}
+
 @media (max-width: 420px) {
   .row {
     grid-template-columns: 1fr;
