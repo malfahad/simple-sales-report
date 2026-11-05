@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "1.1.0";
 const CACHE_NAME = `daily-sales-report-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
