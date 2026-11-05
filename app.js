@@ -105,17 +105,6 @@ function setSetting(key, value) {
   );
 }
 
-function getReport(dateKey) {
-  return tx(STORE_REPORTS, "readonly").then(
-    (store) =>
-      new Promise((resolve, reject) => {
-        const req = store.get(dateKey);
-        req.onsuccess = () => resolve(req.result || null);
-        req.onerror = () => reject(req.error);
-      })
-  );
-}
-
 function saveReport(record) {
   return tx(STORE_REPORTS, "readwrite").then(
     (store) =>
@@ -139,6 +128,19 @@ function getAllReports() {
         };
         req.onerror = () => reject(req.error);
       })
+  );
+}
+
+/** Latest saved report earlier in the same month (skips gaps / closed days). */
+async function getPriorReportInMonth(year, monthIndex, dateKey) {
+  const reports = await getAllReports();
+  return (
+    reports.find(
+      (r) =>
+        Number(r.year) === year &&
+        Number(r.monthIndex) === monthIndex &&
+        r.dateKey < dateKey
+    ) || null
   );
 }
 
@@ -286,12 +288,6 @@ function parseReportDate() {
     throw new Error("Invalid date for this month.");
   }
   return { year, monthIndex, day, date };
-}
-
-function yesterdayKey(year, monthIndex, day) {
-  const d = new Date(year, monthIndex, day);
-  d.setDate(d.getDate() - 1);
-  return dateKeyFromParts(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
 function countNonSundaysFromMonthStart(year, monthIndex, throughDay) {
@@ -513,16 +509,11 @@ async function computeAndSaveReport() {
 
   const { year, monthIndex, day } = parseReportDate();
   const dateKey = dateKeyFromParts(year, monthIndex, day);
-  const yKey = yesterdayKey(year, monthIndex, day);
-  const yesterday = await getReport(yKey);
+  const prior = await getPriorReportInMonth(year, monthIndex, dateKey);
 
-  // Reset MTD at month start: only chain from yesterday when it is the same month/year.
-  const sameMonth =
-    yesterday &&
-    Number(yesterday.year) === year &&
-    Number(yesterday.monthIndex) === monthIndex;
-  const yesterdayMtd = sameMonth ? Number(yesterday.mtd) : 0;
-  const mtd = yesterdayMtd + sales;
+  // Chain MTD from the last report in this month (gaps OK); first entry of the month starts at 0.
+  const priorMtd = prior ? Number(prior.mtd) : 0;
+  const mtd = priorMtd + sales;
   const bal = target - mtd;
 
   const salesDays = countNonSundaysFromMonthStart(year, monthIndex, day);
