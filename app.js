@@ -516,7 +516,12 @@ async function computeAndSaveReport() {
   const yKey = yesterdayKey(year, monthIndex, day);
   const yesterday = await getReport(yKey);
 
-  const yesterdayMtd = yesterday ? Number(yesterday.mtd) : 0;
+  // Reset MTD at month start: only chain from yesterday when it is the same month/year.
+  const sameMonth =
+    yesterday &&
+    Number(yesterday.year) === year &&
+    Number(yesterday.monthIndex) === monthIndex;
+  const yesterdayMtd = sameMonth ? Number(yesterday.mtd) : 0;
   const mtd = yesterdayMtd + sales;
   const bal = target - mtd;
 
